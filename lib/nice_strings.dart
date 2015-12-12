@@ -1,6 +1,5 @@
 library nice_strings;
 
-
 const vowels = const ['a', 'e', 'i', 'o', 'u'];
 
 bool isNiceString(String input) {
@@ -8,18 +7,20 @@ bool isNiceString(String input) {
   var pattern = '(' + notAllowed.join('|') + ')';
   if (input.contains(new RegExp(pattern))) return false;
 
-  const int minVowelsCount = 3;
   var vowelsPattern = '(' + vowels.join('|') + ')';
-  var vowelsIterable = new Iterable<String>.generate(minVowelsCount, (_) => vowelsPattern);
-
-  var goodPatternVowels = vowelsIterable.join('.*');
+  var goodPatternVowels = new List.filled(3, vowelsPattern).join('.*');
   if (!input.contains(new RegExp(goodPatternVowels))) return false;
 
   var doubleLetterPattern = r'(.)\1';
-  var goodPatternDoubleLetters = doubleLetterPattern;
-  if (!input.contains(new RegExp(goodPatternDoubleLetters))) return false;
+  if (!input.contains(new RegExp(doubleLetterPattern))) return false;
 
   return true;
 }
 
+bool isNiceStringNewRules(String input) {
+  var patternPair = r'(..).*\1';
+  var patternOneLetter = r'(.).\1';
 
+  return input.contains(new RegExp(patternPair)) &&
+      input.contains(new RegExp(patternOneLetter));
+}

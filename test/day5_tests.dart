@@ -11,6 +11,16 @@ void _puzzle1() {
   });
 }
 
+void _puzzle2() {
+  test('isNiceStringNewRules', () {
+    expect(isNiceStringNewRules('qjhvhtzxzqqjkmpb'), true);
+    expect(isNiceStringNewRules('xxyxx'), true);
+    expect(isNiceStringNewRules('uurcxstgmygtbstg'), false);
+    expect(isNiceStringNewRules('ieodomkazucvgmuy'), false);
+  });
+}
+
 void main() {
   _puzzle1();
+  _puzzle2();
 }
