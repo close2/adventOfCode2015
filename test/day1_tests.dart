@@ -1,5 +1,3 @@
-library day1.test;
-
 import 'package:test/test.dart';
 import 'package:adventOfCode/floor_calculation.dart';
 

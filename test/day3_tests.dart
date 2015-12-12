@@ -1,5 +1,3 @@
-library day3.test;
-
 import 'package:test/test.dart';
 import 'package:adventOfCode/house_visiting.dart';
 

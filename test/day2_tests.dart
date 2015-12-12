@@ -1,5 +1,3 @@
-library day2.test;
-
 import 'package:test/test.dart';
 import 'package:adventOfCode/paper_wrapping.dart';
 
