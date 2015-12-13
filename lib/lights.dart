@@ -66,7 +66,7 @@ class _Instruction {
         _commands.keys.join('|') +
         r') (\d+),(\d+) through (\d+),(\d+)';
     var regExp = new RegExp(pattern);
-    var parsed = regExp.allMatches(stringInstruction).first;
+    var parsed = regExp.firstMatch(stringInstruction);
 
     return new _Instruction.fromCoordinates(
         _commands[parsed[1]],
