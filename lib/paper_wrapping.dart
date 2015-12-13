@@ -1,7 +1,5 @@
 library paper_wrapping;
 
-import 'dart:math' as math;
-
 int calculateWrapping(String dimensions) {
   var xyz = dimensions.split('x').map(int.parse).toList()..sort();
   int x = xyz[0];

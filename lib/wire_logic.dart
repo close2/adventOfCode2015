@@ -32,6 +32,8 @@ int _apply(String wire, String gate, Map<String, dynamic> states) {
     case 'RSHIFT':
       return in1 >> in2;
   }
+
+  throw new StateError('Unknown instruction: $gate');
 }
 
 int _buildStatesAndReadWire(String wire, List<String> connections,
