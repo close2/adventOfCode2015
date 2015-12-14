@@ -18,9 +18,9 @@ bool isNiceString(String input) {
 }
 
 bool isNiceStringNewRules(String input) {
-  var patternPair = r'(..).*\1';
   var patternOneLetter = r'(.).\1';
+  var patternPair = r'(..).*\1';
 
-  return input.contains(new RegExp(patternPair)) &&
-      input.contains(new RegExp(patternOneLetter));
+  return input.contains(new RegExp(patternOneLetter)) &&
+      input.contains(new RegExp(patternPair));
 }

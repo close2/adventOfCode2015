@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
-import 'package:adventOfCode/wire_logic.dart';
+import 'package:adventOfCode/wire_logic.dart' as wl;
+import 'package:adventOfCode/wire_logic_regexp.dart' as regWl;
 
 const circuit = const [
   '123 -> x',
@@ -23,11 +24,22 @@ const Map<String, int> result = const {
   'y': 456
 };
 
-void _puzzle1() {
-  test('readWire', () {
+void _puzzle1WithF(String funName, Function readWire) {
+  test('readWire ($funName)', () {
     result.forEach(
         (String wire, int value) => expect(readWire(wire, circuit), value));
   });
+  test('readWire numbers wires mixed ($funName)', () {
+    expect(readWire('y', ['123 -> x', 'x -> y']), 123);
+    expect(readWire('a', ['1 LSHIFT 2 -> a']), 4);
+    expect(readWire('a', ['2 -> b', '1 LSHIFT b -> a']), 4);
+    expect(readWire('a', ['NOT b -> a', '255 -> b']), 0xFF00);
+  });
+}
+
+void _puzzle1() {
+  _puzzle1WithF('readWire', wl.readWire);
+  _puzzle1WithF('readWire with regexp', regWl.readWire);
 }
 
 void main() {

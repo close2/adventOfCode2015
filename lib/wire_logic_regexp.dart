@@ -1,32 +1,28 @@
-library wire_logic;
+library wire_logic_regexp;
 
-int _getInput(String v, Map<String, dynamic> states) {
+int getInput(String v, Map<String, dynamic> states) {
   var isNumber = new RegExp(r'^\d+$').hasMatch(v);
   if (isNumber) return int.parse(v);
-
   var currentState = states[v];
   if (currentState is num) return currentState;
-
-  var newState = _apply(currentState, states);
+  var newState = _apply(v, currentState, states);
   states[v] = newState;
   return newState;
 }
 
-int _apply(List<String> gate, Map<String, dynamic> states) {
-  getInput(String wire) => _getInput(wire, states);
-
-  String wire = gate.last;
-
+int _apply(String wire, String gate, Map<String, dynamic> states) {
   // a -> b
-  if (gate.length == 3) return getInput(gate[0]);
+  Match m = new RegExp(r'^(\w+) -> \w+').firstMatch(gate);
+  if (m != null) return getInput(m[1], states);
 
   // NOT x -> y
-  if (gate.length == 4) return ~(getInput(gate[1])) & 0xFFFF;
+  m = new RegExp(r'^NOT (\w+) -> \w+').firstMatch(gate);
+  if (m != null) return ~(getInput(m[1], states)) & 0xFFFF;
 
-  // x AND y -> z
-  int in1 = getInput(gate[0]);
-  int in2 = getInput(gate[2]);
-  switch (gate[1]) {
+  m = new RegExp(r'(\w+) (AND|OR|LSHIFT|RSHIFT) (\w+) -> \w+').firstMatch(gate);
+  int in1 = getInput(m[1], states);
+  int in2 = getInput(m[3], states);
+  switch (m[2]) {
     case 'AND':
       return in1 & in2;
     case 'OR':
@@ -43,12 +39,10 @@ int _apply(List<String> gate, Map<String, dynamic> states) {
 int _buildStatesAndReadWire(String wire, List<String> connections,
     [String overrideWire, int overrideValue]) {
   Map<String, dynamic> states = new Map();
-  connections.forEach((c) {
-    var s = c.split(' ');
-    states[s.last] = s;
-  });
+  connections
+      .forEach((c) => states[new RegExp(r'.* -> (\w+)').firstMatch(c)[1]] = c);
   if (overrideWire != null) states[overrideWire] = overrideValue;
-  return _getInput(wire, states);
+  return getInput(wire, states);
 }
 
 int readWire(String wire, List<String> connections) {

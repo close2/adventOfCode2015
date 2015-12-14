@@ -16,6 +16,7 @@ int _countVisitedHouses(String directions, {bool roboSanta: false}) {
       case '<': x[santaIndex]--; break;
       case '^': y[santaIndex]++; break;
       case 'v': y[santaIndex]--; break;
+      default: throw new StateError('Unknown direction.');
     }
     visitedHouses.add('${x[santaIndex]}.${y[santaIndex]}');
     if (roboSanta) santaIndex = (santaIndex + 1) % 2;
