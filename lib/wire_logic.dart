@@ -15,8 +15,6 @@ int _getInput(String v, Map<String, dynamic> states) {
 int _apply(List<String> gate, Map<String, dynamic> states) {
   getInput(String wire) => _getInput(wire, states);
 
-  String wire = gate.last;
-
   // a -> b
   if (gate.length == 3) return getInput(gate[0]);
 
