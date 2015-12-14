@@ -3,7 +3,7 @@ library escaped_strings;
 import 'dart:convert';
 
 
-/* DOESN'T WORK
+/* DOESN'T WORK  JSON uses \uABCD
 String _unescape(String s) {
   return JSON.decode(s);
 }
