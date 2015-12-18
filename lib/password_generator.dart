@@ -16,7 +16,7 @@ bool isValidPassword(List<int> password) {
 }
 
 String findNextPassword(String password) {
-  var pw = new List.from(password.codeUnits);
+  var pw = new List<int>.from(password.codeUnits);
 
   var invalid = new Set.from(['i', 'o', 'l'].map((_) => _.codeUnitAt(0)));
   var a = 'a'.codeUnitAt(0);

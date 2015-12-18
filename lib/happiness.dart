@@ -22,7 +22,7 @@ int findBestHappiness(List<String> preferences, {bool addNeutral: false}) {
   var bestHappinessValue = null;
   //var bestArrangement = null;
 
-  findBest(List<String> arrangement) {
+  void findBest(List<String> arrangement) {
     var happinessForArrangement = 0;
     var endAt = addNeutral ? arrangement.length - 1 : arrangement.length;
     // if we have a neutral person.  Assume it always sits at the end
@@ -44,8 +44,9 @@ int findBestHappiness(List<String> preferences, {bool addNeutral: false}) {
   // Because circular table, we can limit our search to arrangements where
   // always the same person starts.
   // Unless we add a neutral person sitting at the end of the list.
-  var guests = happinessChange.keys.toList(growable: false)..sort();
-  permutations(guests)
+  List<String> guests = happinessChange.keys.toList(growable: false)..sort();
+  Iterable<List<String>> perm = permutations(guests);
+  perm
       .where((arrangement) => addNeutral || arrangement.first == guests.first)
       .forEach(findBest);
 

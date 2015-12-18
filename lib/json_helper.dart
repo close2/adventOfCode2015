@@ -22,18 +22,19 @@ int sumIntsInJsonString2(String input) {
   return sum;
 }
 
-int _sumIntsInJsonExclude(var input, {String exclude: 'red'}) {
-  if (input is num) return input;
-  if (input is List || input is Iterable) {
-    return input
-        .map((_) => _sumIntsInJsonExclude(_, exclude: exclude))
-        .fold(0, (prev, i) => prev + i);
+int _sumIntsInJsonExclude(var totalInput, {String exclude: 'red'}) {
+  int sumIntsInJsonExclude(var input) {
+    if (input is num) return input;
+    if (input is List || input is Iterable) {
+      return input.map(sumIntsInJsonExclude).fold(0, (prev, i) => prev + i);
+    }
+    if (input is Map) {
+      if (exclude != null && input.values.contains(exclude)) return 0;
+      return sumIntsInJsonExclude(input.values);
+    }
+    return 0;
   }
-  if (input is Map) {
-    if (exclude != null && input.values.contains(exclude)) return 0;
-    return _sumIntsInJsonExclude(input.values, exclude: exclude);
-  }
-  return 0;
+  return sumIntsInJsonExclude(totalInput);
 }
 
 int sumIntsInJsonExclude(String input, {String exclude: 'red'}) {

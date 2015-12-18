@@ -18,7 +18,7 @@ bool _applyInstruction(Point p, bool previous, _Instruction instruction) {
 }
 */
 
-int _applyInstruction(Point p, int previous, _Instruction instruction) {
+int _applyInstruction(Point<num> p, int previous, _Instruction instruction) {
   if (instruction.area.containsPoint(p)) {
     switch (instruction.command) {
       case _Command.on:
@@ -32,7 +32,7 @@ int _applyInstruction(Point p, int previous, _Instruction instruction) {
   return previous;
 }
 
-int _applyInstructionWithBrightness(Point p, int previous, _Instruction instruction) {
+int _applyInstructionWithBrightness(Point<num> p, int previous, _Instruction instruction) {
   if (instruction.area.containsPoint(p)) {
     switch (instruction.command) {
       case _Command.on:
@@ -77,7 +77,7 @@ class _Instruction {
   }
 }
 
-typedef int _F(Point p, int previous, _Instruction instruction);
+typedef int _F(Point<num> p, int previous, _Instruction instruction);
 
 int _calculate(List<String> stringInstructions, _F f) {
   var instructions = stringInstructions
@@ -87,7 +87,7 @@ int _calculate(List<String> stringInstructions, _F f) {
   int brightnessCounter = 0;
   for (int x = 0; x < 1000; x++) {
     for (int y = 0; y < 1000; y++) {
-      var currentPoint = new Point(x, y);
+      var currentPoint = new Point<num>(x, y);
       var brightness = instructions.fold(
           0,
           (int previous, _Instruction instruction) =>

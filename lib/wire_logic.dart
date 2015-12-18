@@ -7,7 +7,7 @@ int _getInput(String v, Map<String, dynamic> states) {
   var currentState = states[v];
   if (currentState is num) return currentState;
 
-  var newState = _apply(currentState, states);
+  var newState = _apply(currentState as List<String>, states);
   states[v] = newState;
   return newState;
 }

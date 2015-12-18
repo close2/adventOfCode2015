@@ -41,12 +41,15 @@ int findPathLength(List<String> distanceDescriptions, {bool shortest: true}) {
 
   // lastCity stuff is to prevent unnecessary calculation of reversed path
   var lastCityOfFirstPermutation = null;
-  it.permutations(distances.keys).where((List<String> cities) {
+  bool startsNotWithLastCityOfFirstPermutation(List<String> cities) {
     if (lastCityOfFirstPermutation == null) {
       lastCityOfFirstPermutation = cities.last;
     }
-    return cities.first != lastCityOfFirstPermutation;
-  }).forEach(findBest);
+    return cities.first == lastCityOfFirstPermutation;
+  }
+
+  Iterable<List<String>> perm = it.permutations(distances.keys);
+  perm.where(startsNotWithLastCityOfFirstPermutation).forEach(findBest);
 
   return bestDistance;
 }
