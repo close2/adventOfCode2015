@@ -10,7 +10,6 @@ environment:
 dependencies:
   crypto: any
   more: any
-  cassowary: any
 
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'
