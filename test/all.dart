@@ -12,7 +12,8 @@ import 'day11_tests.dart' as day11;
 import 'day12_tests.dart' as day12;
 import 'day13_tests.dart' as day13;
 import 'day14_tests.dart' as day14;
-import 'day14_tests.dart' as day15;
+import 'day15_tests.dart' as day15;
+import 'day17_tests.dart' as day17;
 
 void main() {
   day1.main();
@@ -30,4 +31,5 @@ void main() {
   day13.main();
   day14.main();
   day15.main();
+  day17.main();
 }
