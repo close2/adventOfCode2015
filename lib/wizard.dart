@@ -9,148 +9,118 @@ final Logger _logger = new Logger('wizard');
 const _initHitpoints = 50;
 const _initMana = 500;
 
+class GameState {
+  int bossHitpoints;
+  int hitpoints = _initHitpoints;
+  int mana = _initMana;
+  int armor = 0;
+  int spellShield = 0;
+  int spellPoison = 0;
+  int spellRecharge = 0;
+
+  GameState(this.bossHitpoints);
+
+  factory GameState.from(GameState gameState) {
+    var res = new GameState(gameState.bossHitpoints);
+    res.bossHitpoints = gameState.bossHitpoints;
+    res.hitpoints = gameState.hitpoints;
+    res.mana = gameState.mana;
+    res.armor = gameState.armor;
+    res.spellShield = gameState.spellShield;
+    res.spellPoison = gameState.spellPoison;
+    res.spellRecharge = gameState.spellRecharge;
+    return res;
+  }
+}
+
 int mana(int bossHitpoints, int bossDamage, {bool levelHard: false}) {
   int leastManaSpent = null;
   List<String> bestSpells = null;
 
-  void playRound(int bossHitpoints,
-      [int manaSpent = 0,
-      int hitPoints = _initHitpoints,
-      int mana = _initMana,
-      int armor,
-      int spellShield = 0,
-      int spellPoison = 0,
-      int spellRecharge = 0,
-      bool playerRound = true,
-      Iterable<String> spellsCast = const <String>[]]) {
+  void playRound(GameState state, int manaSpent, bool playerRound, Iterable<String> spellsCast) {
+
+    if (leastManaSpent != null && manaSpent > leastManaSpent) return;
+
     // Apply all round based spells:
-    if (spellShield > 0) {
-      armor += 7;
-      spellShield--;
-    }
-    if (spellPoison > 0) {
-      bossHitpoints -= 3;
-      spellPoison--;
-    }
-    if (spellRecharge > 0) {
-      mana += 101;
-      spellRecharge--;
-    }
+    if (state.spellShield-- > 0) state.armor += 7;
+    if (state.spellPoison-- > 0) state.bossHitpoints -= 3;
+    if (state.spellRecharge-- > 0) state.mana += 101;
 
     // Boss attacks player.
     if (!playerRound) {
-      if (bossHitpoints <= 0) {
+      if (state.bossHitpoints <= 0) {
         // We just killed the boss.
         if (leastManaSpent == null || manaSpent < leastManaSpent) {
           leastManaSpent = manaSpent;
           bestSpells = spellsCast.toList(growable: false);
         }
-        return;
-      } else if (leastManaSpent != null && manaSpent > leastManaSpent) return;
-
-      // Boss is hitting us:
-      hitPoints -= math.max(1, bossDamage - armor);
-      if (hitPoints > 0) {
-        playRound(bossHitpoints, manaSpent, hitPoints, mana, armor, spellShield,
-            spellPoison, spellRecharge, true, spellsCast);
+      } else {
+        // Boss is hitting us:
+        state.hitpoints -= math.max(1, bossDamage - state.armor);
+        playRound(state, manaSpent, true, spellsCast);
       }
       return;
     }
 
-    if (levelHard) hitPoints--;
+    if (levelHard) state.hitpoints--;
 
     // Player attacks boss.
-    armor = 0;
+    state.armor = 0;
 
-    // Did we die?
-    if (hitPoints < 0 || mana <= 0) return;
+    // Have we died?
+    if (state.hitpoints <= 0 || state.mana <= 0) return;
 
-    // Now try different spells:
-    if (spellShield == 0 && mana >= 113) {
-      playRound(
-          bossHitpoints,
-          manaSpent + 113,
-          hitPoints,
-          mana - 113,
-          armor,
-          spellShield + 6,
-          spellPoison,
-          spellRecharge,
-          false,
-          concat([
-            spellsCast,
-            ['Shield']
-          ]) as Iterable<String>);
+    Iterable<String> addSpell(String newSpell) {
+      return concat([
+        spellsCast,
+        [newSpell]
+      ]) as Iterable<String>;
     }
-    if (spellPoison == 0 && mana >= 173) {
-      playRound(
-          bossHitpoints,
-          manaSpent + 173,
-          hitPoints,
-          mana - 173,
-          armor,
-          spellShield,
-          spellPoison + 6,
-          spellRecharge,
-          false,
-          concat([
-            spellsCast,
-            ['Poison']
-          ]) as Iterable<String>);
+
+    // Now try different spells.  We create a temporary new state for every
+    // spell we try and only modify this state.  This means that every spell
+    // starts with the same state.
+    const int shieldCost = 113;
+    if (state.spellShield <= 0 && state.mana >= shieldCost) {
+      var newState = new GameState.from(state);
+      newState.mana -= shieldCost;
+      newState.spellShield = 6;
+      playRound(newState, manaSpent + shieldCost, false, addSpell('Shield'));
     }
-    if (spellRecharge == 0 && mana >= 229) {
-      playRound(
-          bossHitpoints,
-          manaSpent + 229,
-          hitPoints,
-          mana - 229,
-          armor,
-          spellShield,
-          spellPoison,
-          spellRecharge + 5,
-          false,
-          concat([
-            spellsCast,
-            ['Recharge']
-          ]) as Iterable<String>);
+    const int poisonCost = 173;
+    if (state.spellPoison <= 0 && state.mana >= poisonCost) {
+      var newState = new GameState.from(state);
+      newState.mana -= poisonCost;
+      newState.spellPoison = 6;
+      playRound(newState, manaSpent + poisonCost, false, addSpell('Poison'));
+    }
+    const int rechargeCost = 229;
+    if (state.spellRecharge <= 0 && state.mana >= rechargeCost) {
+      var newState = new GameState.from(state);
+      newState.mana -= rechargeCost;
+      newState.spellRecharge = 5;
+      playRound(newState, manaSpent + rechargeCost, false, addSpell('Recharge'));
     }
     // Missile spell:
-    if (mana >= 53) {
-      playRound(
-          bossHitpoints - 4,
-          manaSpent + 53,
-          hitPoints,
-          mana - 53,
-          armor,
-          spellShield,
-          spellPoison,
-          spellRecharge,
-          false,
-          concat([
-            spellsCast,
-            ['Missile']
-          ]) as Iterable<String>);
+    const int missileCost = 53;
+    if (state.mana >= missileCost) {
+      var newState = new GameState.from(state);
+      newState.mana -= missileCost;
+      newState.bossHitpoints -= 4;
+      playRound(newState, manaSpent + missileCost, false, addSpell('Missile'));
     }
     // Drain spell:
-    if (mana >= 73) {
-      playRound(
-          bossHitpoints - 2,
-          manaSpent + 73,
-          hitPoints + 2,
-          mana - 73,
-          armor,
-          spellShield,
-          spellPoison,
-          spellRecharge,
-          false,
-          concat([
-            spellsCast,
-            ['Drain']
-          ]) as Iterable<String>);
+    const int drainCost = 73;
+    if (state.mana >= drainCost) {
+      var newState = new GameState.from(state);
+      newState.mana -= drainCost;
+      newState.hitpoints += 2;
+      newState.bossHitpoints -= 2;
+      playRound(newState, manaSpent + drainCost, false, addSpell('Drain'));
     }
   }
 
-  playRound(bossHitpoints);
+  playRound(new GameState(bossHitpoints), 0, true, []);
 
   _logger.info('Best spells ${levelHard ? '(hard)' : ''}: ${bestSpells}');
   return leastManaSpent;
